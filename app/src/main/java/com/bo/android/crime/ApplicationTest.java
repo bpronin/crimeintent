@@ -1,4 +1,4 @@
-package bo.com.crimeintent;
+package com.bo.android.crime;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

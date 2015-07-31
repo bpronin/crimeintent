@@ -4,6 +4,10 @@ android {
     compileSdkVersion 22
     buildToolsVersion "22.0.1"
 
+    lintOptions {
+        abortOnError false
+    }
+
     defaultConfig {
         applicationId "bo.com.crimeintent"
         minSdkVersion 8
@@ -11,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
