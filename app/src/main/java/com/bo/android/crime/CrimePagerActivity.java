@@ -35,7 +35,7 @@ public class CrimePagerActivity extends FragmentActivity {
             }
 
         });
-        pager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
             public void onPageSelected(int pos) {
                 setTitle(store.getItems().get(pos).getTitle());
