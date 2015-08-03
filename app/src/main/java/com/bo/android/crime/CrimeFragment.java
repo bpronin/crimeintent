@@ -1,22 +1,27 @@
 package com.bo.android.crime;
 
 
+import android.annotation.TargetApi;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import com.bo.R;
+import com.bo.android.R;
 
 import java.util.Date;
 import java.util.UUID;
@@ -43,22 +48,23 @@ public class CrimeFragment extends Fragment {
         return fragment;
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        UUID crimeId = (UUID) getArguments().getSerializable(ITEM_ID);
-        document = CrimeLab.getInstance().getById(crimeId);
+        setHasOptionsMenu(true);
+        loadDocument();
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_crime, container, false);
 
-        createTitleEditor(view);
-        createDateButton(view);
-        createSolvedCheckBox(view);
-
+        setupActionBar();
+        setupTitleEditor(view);
+        setupDateButton(view);
+        setupSolvedCheckBox(view);
         updateControls();
 
         return view;
@@ -74,7 +80,31 @@ public class CrimeFragment extends Fragment {
         }
     }
 
-    private void createTitleEditor(View view) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (NavUtils.getParentActivityName(getActivity()) != null) {
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void setupActionBar() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            if (NavUtils.getParentActivityName(getActivity()) != null) {
+                ActionBar actionBar = getActivity().getActionBar();
+                if (actionBar != null) {
+                    actionBar.setDisplayHomeAsUpEnabled(true);
+                }
+            }
+        }
+    }
+
+    private void setupTitleEditor(View view) {
         titleEditor = (EditText) view.findViewById(R.id.crime_title);
         titleEditor.addTextChangedListener(new TextWatcher() {
 
@@ -95,7 +125,7 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-    private void createDateButton(View view) {
+    private void setupDateButton(View view) {
         dateButton = (Button) view.findViewById(R.id.crime_date);
         dateButton.setOnClickListener(new View.OnClickListener() {
 
@@ -109,7 +139,7 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-    private void createSolvedCheckBox(View view) {
+    private void setupSolvedCheckBox(View view) {
         solvedCheckBox = (CheckBox) view.findViewById(R.id.crime_solved);
         solvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
@@ -118,6 +148,11 @@ public class CrimeFragment extends Fragment {
                 document.setSolved(solvedCheckBox.isChecked());
             }
         });
+    }
+
+    private void loadDocument() {
+        UUID crimeId = (UUID) getArguments().getSerializable(ITEM_ID);
+        document = CrimeLab.getInstance().getById(crimeId);
     }
 
     private void updateControls() {

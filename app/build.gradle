@@ -7,9 +7,9 @@ android {
         abortOnError false
     }
     defaultConfig {
-        applicationId "bo.com.crimeintent"
+        applicationId 'bo.com.crimeintent'
         minSdkVersion 8
-        targetSdkVersion 22
+        targetSdkVersion 17
         versionCode 1
         versionName '1.0.0'
         /* change default apk name */

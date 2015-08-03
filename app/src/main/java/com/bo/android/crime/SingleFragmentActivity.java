@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import com.bo.R;
+import com.bo.android.R;
 
 public abstract class SingleFragmentActivity extends FragmentActivity {
 
@@ -18,8 +18,7 @@ public abstract class SingleFragmentActivity extends FragmentActivity {
         if (fragment == null) {
             fragment = createFragment();
             FragmentTransaction transaction = fm.beginTransaction();
-            transaction.add(R.id.fragment_container, fragment);
-            transaction.commit();
+            transaction.add(R.id.fragment_container, fragment).commit();
         }
 
     }

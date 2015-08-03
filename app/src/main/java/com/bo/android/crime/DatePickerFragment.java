@@ -10,8 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.DatePicker;
-import com.bo.R;
-import com.bo.android.DatePickerUtils;
+import com.bo.android.R;
 
 import java.util.Date;
 import java.util.GregorianCalendar;

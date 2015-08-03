@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
-    package="com.bo"
+    package="com.bo.android"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
@@ -9,14 +9,21 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
 
-        <activity android:name=".android.crime.CrimeListActivity">
+        <activity android:name=".crime.CrimeListActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
-        <activity android:name=".android.crime.CrimePagerActivity"/>
+        <activity
+            android:name=".crime.CrimePagerActivity"
+            android:label="@string/app_name">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.bo.android.crime.CrimeListActivity"/>
+                <!-- NOTE! android:value should be fully qualified name. do not use ".crime.CrimeListActivity" -->
+        </activity>
 
     </application>
 
