@@ -1,6 +1,7 @@
 package com.bo.android.crime;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -10,13 +11,13 @@ public class CrimeLab {
     private List<Crime> items = new ArrayList<>();
 
     private CrimeLab() {
-        for (int i = 0; i < 100; i++) {
-            Crime crime = new Crime();
-            crime.setTitle("Crime #" + i);
-            crime.setSolved(i % 2 == 0);
-
-            items.add(crime);
-        }
+//        for (int i = 0; i < 100; i++) {
+//            Crime crime = new Crime();
+//            crime.setTitle("Crime #" + i);
+//            crime.setSolved(i % 2 == 0);
+//
+//            items.add(crime);
+//        }
     }
 
     public static CrimeLab getInstance() {
@@ -26,8 +27,12 @@ public class CrimeLab {
         return instance;
     }
 
+    public void addItem(Crime item) {
+        items.add(item);
+    }
+
     public List<Crime> getItems() {
-        return items;
+        return Collections.unmodifiableList(items);
     }
 
     public Crime getById(UUID itemId) {
