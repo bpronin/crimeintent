@@ -7,17 +7,21 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.*;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.ListView;
 import com.bo.android.R;
+import com.bo.android.crime.util.ActionBarUtil;
 
 public class CrimeListFragment extends ListFragment {
 
-    private CrimeLab store = CrimeLab.getInstance();
+    private CrimeLab store;
     private boolean subtitleVisible;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        store = CrimeLab.getInstance(getActivity());
         setListAdapter(new CrimeListViewItemAdapter(this, store));
         setHasOptionsMenu(true);
         setRetainInstance(true);
@@ -43,11 +47,8 @@ public class CrimeListFragment extends ListFragment {
     }
 
     private void setupActionBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            ActionBar actionBar = getActivity().getActionBar();
-            if (actionBar != null && subtitleVisible) {
-                actionBar.setSubtitle(R.string.subtitle);
-            }
+        if (subtitleVisible) {
+            ActionBarUtil.setSubtitle(getActivity(), R.string.subtitle);
         }
     }
 

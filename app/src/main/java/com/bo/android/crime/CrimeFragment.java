@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import com.bo.android.R;
+import com.bo.android.crime.util.ActionBarUtil;
 
 import java.util.Date;
 import java.util.UUID;
@@ -37,6 +38,7 @@ public class CrimeFragment extends Fragment {
     private CheckBox solvedCheckBox;
     private Button dateButton;
     private EditText titleEditor;
+    private CrimeLab store;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         CrimeFragment fragment = new CrimeFragment();
@@ -52,6 +54,7 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        store = CrimeLab.getInstance(getActivity());
         setHasOptionsMenu(true);
         loadDocument();
     }
@@ -93,14 +96,15 @@ public class CrimeFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        store.save();
+    }
+
     private void setupActionBar() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            if (NavUtils.getParentActivityName(getActivity()) != null) {
-                ActionBar actionBar = getActivity().getActionBar();
-                if (actionBar != null) {
-                    actionBar.setDisplayHomeAsUpEnabled(true);
-                }
-            }
+        if (NavUtils.getParentActivityName(getActivity()) != null) {
+            ActionBarUtil.setDisplayHomeAsUpEnabled(getActivity(), true);
         }
     }
 
@@ -152,7 +156,7 @@ public class CrimeFragment extends Fragment {
 
     private void loadDocument() {
         UUID crimeId = (UUID) getArguments().getSerializable(ITEM_ID);
-        document = CrimeLab.getInstance().getById(crimeId);
+        document = store.getById(crimeId);
     }
 
     private void updateControls() {

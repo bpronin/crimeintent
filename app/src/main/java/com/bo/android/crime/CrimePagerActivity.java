@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import com.bo.android.R;
+import com.bo.android.crime.util.ActionBarUtil;
 
 import java.util.UUID;
 
@@ -16,8 +17,7 @@ public class CrimePagerActivity extends FragmentActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        store = CrimeLab.getInstance();
+        store = CrimeLab.getInstance(this);
 
         ViewPager pager = new ViewPager(this);
         pager.setId(R.id.crime_view_pager);
@@ -35,10 +35,12 @@ public class CrimePagerActivity extends FragmentActivity {
             }
 
         });
+
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
             public void onPageSelected(int pos) {
-                setTitle(store.getItems().get(pos).getTitle());
+                /* setTitle(store.getItems().get(pos).getTitle()); */
+                ActionBarUtil.setSubtitle(CrimePagerActivity.this, store.getItems().get(pos).getTitle());
             }
         });
 
