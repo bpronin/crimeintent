@@ -2,7 +2,6 @@ package com.bo.android.crime;
 
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
@@ -13,10 +12,7 @@ import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -54,9 +50,9 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        store = CrimeLab.getInstance(getActivity());
         setHasOptionsMenu(true);
-        loadDocument();
+        store = CrimeLab.getInstance(getActivity());
+        document = store.getById((UUID) getArguments().getSerializable(ITEM_ID));
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -84,12 +80,19 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.crime, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                if (NavUtils.getParentActivityName(getActivity()) != null) {
-                    NavUtils.navigateUpFromSameTask(getActivity());
-                }
+                onGoBack();
+                return true;
+            case R.id.menu_item_remove_crime:
+                onRemoveItem();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -154,15 +157,21 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-    private void loadDocument() {
-        UUID crimeId = (UUID) getArguments().getSerializable(ITEM_ID);
-        document = store.getById(crimeId);
-    }
-
     private void updateControls() {
         titleEditor.setText(document.getTitle());
         dateButton.setText(DateFormat.format(DATE_PATTERN, document.getDate()));
         solvedCheckBox.setChecked(document.isSolved());
+    }
+
+    private void onGoBack() {
+        if (NavUtils.getParentActivityName(getActivity()) != null) {
+            NavUtils.navigateUpFromSameTask(getActivity());
+        }
+    }
+
+    private void onRemoveItem() {
+        store.remove(document);
+        onGoBack();
     }
 
 }

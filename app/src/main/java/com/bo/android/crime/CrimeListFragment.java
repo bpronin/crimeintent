@@ -111,10 +111,12 @@ public class CrimeListFragment extends ListFragment {
 
         inflater.inflate(R.menu.fragment_crime_list, menu);
 
+/*
         MenuItem showSubtitle = menu.findItem(R.id.menu_item_show_subtitle);
         if (subtitleVisible && showSubtitle != null) {
             showSubtitle.setTitle(R.string.hide_subtitle);
         }
+*/
     }
 
     @Override
@@ -129,9 +131,11 @@ public class CrimeListFragment extends ListFragment {
             case R.id.menu_item_new_crime:
                 onNewItem();
                 return true;
+/*
             case R.id.menu_item_show_subtitle:
                 onSwitchSubtitle(item);
                 return true;
+*/
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -159,6 +163,7 @@ public class CrimeListFragment extends ListFragment {
         startActivityForResult(intent, 0);
     }
 
+/*
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void onSwitchSubtitle(MenuItem item) {
         ActionBar actionBar = getActivity().getActionBar();
@@ -174,6 +179,7 @@ public class CrimeListFragment extends ListFragment {
             }
         }
     }
+*/
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private class ListMultiChoiceModeListener implements MultiChoiceModeListener {
