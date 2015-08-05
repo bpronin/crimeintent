@@ -16,13 +16,16 @@ public class CrimeListFragment extends ListFragment {
 
     private CrimeLab store;
     private boolean subtitleVisible;
+    private CrimeListViewItemAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         store = CrimeLab.getInstance(getActivity());
-        setListAdapter(new CrimeListViewItemAdapter(this, store));
+        adapter = new CrimeListViewItemAdapter(this, store);
+
+        setListAdapter(adapter);
         setHasOptionsMenu(true);
         setRetainInstance(true);
     }
@@ -63,14 +66,14 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        adapter().notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        Crime crime = adapter().getItem(position);
+        Crime crime = adapter.getItem(position);
 
         Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
         intent.putExtra(CrimeFragment.ITEM_ID, crime.getId());
@@ -79,7 +82,7 @@ public class CrimeListFragment extends ListFragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        adapter().notifyDataSetChanged();
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -106,10 +109,6 @@ public class CrimeListFragment extends ListFragment {
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    protected CrimeListViewItemAdapter adapter() {
-        return (CrimeListViewItemAdapter) getListAdapter();
     }
 
     private void onNewItem() {
