@@ -40,8 +40,8 @@ public class CrimeLab {
         items.add(item);
     }
 
-    public void remove(int index) {
-        items.remove(index);
+    public void remove(Crime item) {
+        items.remove(item);
     }
 
     public List<Crime> getAll() {

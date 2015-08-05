@@ -7,12 +7,15 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.*;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import com.bo.android.R;
 import com.bo.android.crime.util.ActionBarUtil;
+import com.bo.android.crime.util.LogUtil;
 
-import static android.widget.AdapterView.*;
+import static android.widget.AbsListView.MultiChoiceModeListener;
+import static android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class CrimeListFragment extends ListFragment {
 
@@ -38,12 +41,20 @@ public class CrimeListFragment extends ListFragment {
         View view = inflater.inflate(R.layout.list_content, container, false);
 
         setupActionBar();
+        setupListView(view);
         setupEmptyListView(view);
 
-        ListView listView = (ListView) view.findViewById(android.R.id.list);
-        registerForContextMenu(listView);
-
         return view;
+    }
+
+    private void setupListView(View view) {
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            registerForContextMenu(listView);
+        } else {
+            listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE_MODAL);
+            listView.setMultiChoiceModeListener(new ListMultiChoiceModeListener());
+        }
     }
 
     private void setupEmptyListView(View view) {
@@ -130,7 +141,9 @@ public class CrimeListFragment extends ListFragment {
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_remove_crime:
-                onRemoveItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+                int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
+                store.remove(adapter.getItem(position));
+                adapter.notifyDataSetChanged();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -146,11 +159,6 @@ public class CrimeListFragment extends ListFragment {
         startActivityForResult(intent, 0);
     }
 
-    private void onRemoveItem(int index) {
-        store.remove(index);
-        adapter.notifyDataSetChanged();
-    }
-
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     private void onSwitchSubtitle(MenuItem item) {
         ActionBar actionBar = getActivity().getActionBar();
@@ -164,6 +172,48 @@ public class CrimeListFragment extends ListFragment {
                 item.setTitle(R.string.show_subtitle);
                 subtitleVisible = false;
             }
+        }
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private class ListMultiChoiceModeListener implements MultiChoiceModeListener {
+
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            mode.getMenuInflater().inflate(R.menu.crime_list_item, menu);
+            return true;
+        }
+
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_item_remove_crime:
+                    for (int i = adapter.getCount() - 1; i >= 0; i--) {
+                        if (getListView().isItemChecked(i)) {
+                            store.remove(adapter.getItem(i));
+                        }
+                    }
+
+                    mode.finish();
+                    adapter.notifyDataSetChanged();
+
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            LogUtil.info(this, "onPrepareActionMode");
+            return false;
+        }
+
+        public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
+            /* do nothing */
+            LogUtil.info(this, "onItemCheckedStateChanged");
+        }
+
+        public void onDestroyActionMode(ActionMode mode) {
+            /* do nothing */
+            LogUtil.info(this, "onDestroyActionMode");
         }
     }
 
