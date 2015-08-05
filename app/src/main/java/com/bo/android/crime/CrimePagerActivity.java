@@ -25,12 +25,12 @@ public class CrimePagerActivity extends FragmentActivity {
 
             @Override
             public int getCount() {
-                return store.getItems().size();
+                return store.getAll().size();
             }
 
             @Override
             public Fragment getItem(int pos) {
-                Crime crime = store.getItems().get(pos);
+                Crime crime = store.getAll().get(pos);
                 return CrimeFragment.newInstance(crime.getId());
             }
 
@@ -39,8 +39,8 @@ public class CrimePagerActivity extends FragmentActivity {
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
 
             public void onPageSelected(int pos) {
-                /* setTitle(store.getItems().get(pos).getTitle()); */
-                ActionBarUtil.setSubtitle(CrimePagerActivity.this, store.getItems().get(pos).getTitle());
+                /* setTitle(store.getAll().get(pos).getTitle()); */
+                ActionBarUtil.setSubtitle(CrimePagerActivity.this, store.getAll().get(pos).getTitle());
             }
         });
 

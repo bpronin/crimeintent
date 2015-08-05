@@ -12,6 +12,8 @@ import android.widget.ListView;
 import com.bo.android.R;
 import com.bo.android.crime.util.ActionBarUtil;
 
+import static android.widget.AdapterView.*;
+
 public class CrimeListFragment extends ListFragment {
 
     private CrimeLab store;
@@ -32,11 +34,19 @@ public class CrimeListFragment extends ListFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        setupActionBar();
-
         /* return super.onCreateView(inflater, container, savedInstanceState); */
-
         View view = inflater.inflate(R.layout.list_content, container, false);
+
+        setupActionBar();
+        setupEmptyListView(view);
+
+        ListView listView = (ListView) view.findViewById(android.R.id.list);
+        registerForContextMenu(listView);
+
+        return view;
+    }
+
+    private void setupEmptyListView(View view) {
         Button emptyListButton = (Button) view.findViewById(R.id.emptyListButton);
         emptyListButton.setOnClickListener(new View.OnClickListener() {
 
@@ -46,7 +56,6 @@ public class CrimeListFragment extends ListFragment {
             }
 
         });
-        return view;
     }
 
     private void setupActionBar() {
@@ -98,6 +107,12 @@ public class CrimeListFragment extends ListFragment {
     }
 
     @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        getActivity().getMenuInflater().inflate(R.menu.crime_list_item, menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
@@ -111,13 +126,29 @@ public class CrimeListFragment extends ListFragment {
         }
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_remove_crime:
+                onRemoveItem(((AdapterContextMenuInfo) item.getMenuInfo()).position);
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
+
     private void onNewItem() {
         Crime crime = new Crime();
-        store.addItem(crime);
+        store.add(crime);
 
         Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
         intent.putExtra(CrimeFragment.ITEM_ID, crime.getId());
         startActivityForResult(intent, 0);
+    }
+
+    private void onRemoveItem(int index) {
+        store.remove(index);
+        adapter.notifyDataSetChanged();
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

@@ -35,7 +35,7 @@ public class CrimeJsonSerializer {
 
     public void save() throws JSONException, IOException {
         JSONArray json = new JSONArray();
-        for (Crime crime : data.getItems()) {
+        for (Crime crime : data.getAll()) {
             json.put(toJson(crime));
         }
 
@@ -72,7 +72,7 @@ public class CrimeJsonSerializer {
 
             data.clear();
             for (int i = 0; i < array.length(); i++) {
-                data.addItem(fromJson(array.getJSONObject(i)));
+                data.add(fromJson(array.getJSONObject(i)));
             }
 
             LogUtil.info(this, "File '" + file + "' loaded");

@@ -15,7 +15,7 @@ class CrimeListViewItemAdapter extends ArrayAdapter<Crime> {
     private CrimeListFragment fragment;
 
     public CrimeListViewItemAdapter(CrimeListFragment fragment, CrimeLab store) {
-        super(fragment.getActivity(), 0, store.getItems());
+        super(fragment.getActivity(), 0, store.getAll());
         this.fragment = fragment;
     }
 

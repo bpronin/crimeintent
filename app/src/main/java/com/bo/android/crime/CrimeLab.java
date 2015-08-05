@@ -36,11 +36,15 @@ public class CrimeLab {
         return instance;
     }
 
-    public void addItem(Crime item) {
+    public void add(Crime item) {
         items.add(item);
     }
 
-    public List<Crime> getItems() {
+    public void remove(int index) {
+        items.remove(index);
+    }
+
+    public List<Crime> getAll() {
         return Collections.unmodifiableList(items);
     }
 
