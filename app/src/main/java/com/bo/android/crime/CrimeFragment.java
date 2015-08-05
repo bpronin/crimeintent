@@ -26,9 +26,8 @@ import java.util.UUID;
 public class CrimeFragment extends Fragment {
 
     public static final String ITEM_ID = CrimeFragment.class + ".item_id";
-    private static final String DATE_PATTERN = "yyy-MM-dd";
-    private static final String DATE_DIALOG = "date_dialog";
     public static final int REQUEST_DATE = 0;
+    private static final String DATE_PATTERN = "yyy-MM-dd";
 
     private Crime document;
     private CheckBox solvedCheckBox;
@@ -141,7 +140,7 @@ public class CrimeFragment extends Fragment {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 DatePickerFragment dialog = DatePickerFragment.newInstance(document.getDate());
                 dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
-                dialog.show(fm, DATE_DIALOG);
+                dialog.show(fm, "date_dialog");
             }
         });
     }
