@@ -2,15 +2,15 @@ package com.bo.android.crime;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.bo.android.R;
 import com.bo.android.crime.util.ActionBarUtil;
 
 import java.util.UUID;
 
-public class CrimePagerActivity extends FragmentActivity {
+public class CrimePagerActivity extends SherlockFragmentActivity {
 
     private CrimeLab store;
 
@@ -40,7 +40,7 @@ public class CrimePagerActivity extends FragmentActivity {
 
             public void onPageSelected(int pos) {
                 /* setTitle(store.getAll().get(pos).getTitle()); */
-                ActionBarUtil.setSubtitle(CrimePagerActivity.this, store.getAll().get(pos).getTitle());
+                ActionBarUtil.setSubtitle(getSupportActionBar(), store.getAll().get(pos).getTitle());
             }
         });
 

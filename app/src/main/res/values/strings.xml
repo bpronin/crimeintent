@@ -17,5 +17,6 @@
     <string name="empty_list_text">List is empty</string>
     <string name="empty_list_button_text">Add Item</string>
     <string name="loading">Loading\u2026</string>
-    <string name="remove_crime">Remove selection</string>
+    <string name="remove_crime">Remove</string>
+    <string name="remove_crimes">Remove selection</string>
 </resources>

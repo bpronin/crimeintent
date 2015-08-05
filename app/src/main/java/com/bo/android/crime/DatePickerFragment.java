@@ -7,16 +7,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.widget.DatePicker;
+import com.actionbarsherlock.app.SherlockDialogFragment;
 import com.bo.android.R;
 import com.bo.android.crime.util.DatePickerUtils;
 
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-public class DatePickerFragment extends DialogFragment {
+public class DatePickerFragment extends SherlockDialogFragment {
 
     public static final String DATE_VALUE = "date_value";
 

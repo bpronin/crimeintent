@@ -3,6 +3,6 @@
     <item
         android:id="@+id/menu_item_remove_crime"
         android:icon="@android:drawable/ic_menu_delete"
-        android:title="@string/remove_crimes"
-        />
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/remove_crimes"/>
 </menu>

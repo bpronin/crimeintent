@@ -6,24 +6,26 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import com.actionbarsherlock.app.SherlockFragment;
 import com.bo.android.R;
 import com.bo.android.crime.util.ActionBarUtil;
 
 import java.util.Date;
 import java.util.UUID;
 
-public class CrimeFragment extends Fragment {
+public class CrimeFragment extends SherlockFragment {
 
     public static final String ITEM_ID = CrimeFragment.class + ".item_id";
     public static final int REQUEST_DATE = 0;
@@ -79,13 +81,13 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.crime, menu);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onGoBack();
@@ -106,7 +108,7 @@ public class CrimeFragment extends Fragment {
 
     private void setupActionBar() {
         if (NavUtils.getParentActivityName(getActivity()) != null) {
-            ActionBarUtil.setDisplayHomeAsUpEnabled(getActivity(), true);
+            ActionBarUtil.setDisplayHomeAsUpEnabled(getSherlockActivity().getSupportActionBar(), true);
         }
     }
 

@@ -1,15 +1,13 @@
 package com.bo.android.crime;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.*;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
+import com.actionbarsherlock.app.SherlockListFragment;
 import com.bo.android.R;
 import com.bo.android.crime.util.ActionBarUtil;
 import com.bo.android.crime.util.LogUtil;
@@ -17,7 +15,7 @@ import com.bo.android.crime.util.LogUtil;
 import static android.widget.AbsListView.MultiChoiceModeListener;
 import static android.widget.AdapterView.AdapterContextMenuInfo;
 
-public class CrimeListFragment extends ListFragment {
+public class CrimeListFragment extends SherlockListFragment {
 
     private CrimeLab store;
     private boolean subtitleVisible;
@@ -71,7 +69,7 @@ public class CrimeListFragment extends ListFragment {
 
     private void setupActionBar() {
         if (subtitleVisible) {
-            ActionBarUtil.setSubtitle(getActivity(), R.string.subtitle);
+            ActionBarUtil.setSubtitle(getSherlockActivity().getSupportActionBar(), R.string.subtitle);
         }
     }
 
@@ -106,7 +104,7 @@ public class CrimeListFragment extends ListFragment {
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(com.actionbarsherlock.view.Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
 
         inflater.inflate(R.menu.fragment_crime_list, menu);
@@ -126,7 +124,7 @@ public class CrimeListFragment extends ListFragment {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(com.actionbarsherlock.view.MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
                 onNewItem();

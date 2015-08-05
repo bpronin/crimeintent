@@ -18,7 +18,7 @@ android {
                 def newApkName = "${parent.name}-${output.baseName}-${variant.versionName}"
                 if (!output.zipAlign) newApkName += "-unaligned"
                 newApkName += ".apk"
-                output.outputFile = new File(output.outputFile.parent, newApkName)
+                output.outputFile = new File("${output.outputFile.parent}", newApkName)
             }
         }
     }
@@ -48,4 +48,5 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:support-v4:22.2.1'
+    compile 'com.actionbarsherlock:actionbarsherlock:4.4.0@aar'
 }
