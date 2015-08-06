@@ -14,6 +14,7 @@ public class Crime {
     private String title;
     private Date date;
     private boolean solved;
+    private Photo photo;
 
     public Crime() {
         id = UUID.randomUUID();
@@ -52,6 +53,14 @@ public class Crime {
         this.solved = solved;
     }
 
+    public Photo getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(Photo photo) {
+        this.photo = photo;
+    }
+
     @Override
     public String toString() {
         return "Crime{" +
@@ -59,6 +68,7 @@ public class Crime {
                 ", title='" + title + '\'' +
                 ", date=" + date +
                 ", solved=" + solved +
+                ", photo=" + photo +
                 '}';
     }
 }

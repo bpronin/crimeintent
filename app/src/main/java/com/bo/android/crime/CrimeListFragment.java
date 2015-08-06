@@ -1,18 +1,15 @@
 package com.bo.android.crime;
 
 import android.annotation.TargetApi;
-import android.app.ActionBar;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.*;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import com.bo.android.R;
-import com.bo.android.crime.util.ActionBarUtil;
-import com.bo.android.crime.util.LogUtil;
+import com.bo.android.crime.util.LogUtils;
 
 import static android.widget.AbsListView.MultiChoiceModeListener;
 import static android.widget.AdapterView.AdapterContextMenuInfo;
@@ -20,7 +17,7 @@ import static android.widget.AdapterView.AdapterContextMenuInfo;
 public class CrimeListFragment extends ListFragment {
 
     private CrimeLab store;
-    private boolean subtitleVisible;
+    /* private boolean subtitleVisible; */
     private CrimeListViewItemAdapter adapter;
 
     @Override
@@ -70,9 +67,11 @@ public class CrimeListFragment extends ListFragment {
     }
 
     private void setupActionBar() {
+/*
         if (subtitleVisible) {
-            ActionBarUtil.setSubtitle(getActivity(), R.string.subtitle);
+            ActionBarUtils.setSubtitle(getActivity(), R.string.subtitle);
         }
+*/
     }
 
 /*
@@ -208,18 +207,18 @@ public class CrimeListFragment extends ListFragment {
         }
 
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            LogUtil.info(this, "onPrepareActionMode");
+            LogUtils.info(this, "onPrepareActionMode");
             return false;
         }
 
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             /* do nothing */
-            LogUtil.info(this, "onItemCheckedStateChanged");
+            LogUtils.info(this, "onItemCheckedStateChanged");
         }
 
         public void onDestroyActionMode(ActionMode mode) {
             /* do nothing */
-            LogUtil.info(this, "onDestroyActionMode");
+            LogUtils.info(this, "onDestroyActionMode");
         }
     }
 

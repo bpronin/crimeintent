@@ -3,7 +3,7 @@ package com.bo.android.crime.util;
 import android.util.Log;
 import com.bo.android.crime.CrimeJsonSerializer;
 
-public class LogUtil {
+public class LogUtils {
 
     public static void debug(Object owner, String message) {
         Log.d(owner.getClass().getName(), message);
@@ -14,7 +14,11 @@ public class LogUtil {
     }
 
     public static void error(Object owner, Exception x) {
-        Log.e(owner.getClass().getName(), x.getMessage(), x);
+        error(owner, x.getMessage(), x);
+    }
+
+    public static void error(Object owner, String message, Exception x) {
+        Log.e(owner.getClass().getName(), message, x);
     }
 
 }

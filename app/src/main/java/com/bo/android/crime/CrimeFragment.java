@@ -4,6 +4,8 @@ package com.bo.android.crime;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -13,12 +15,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.view.*;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
+import android.widget.*;
 import com.bo.android.R;
-import com.bo.android.crime.util.ActionBarUtil;
+import com.bo.android.crime.util.ActionBarUtils;
+import com.bo.android.crime.util.PictureUtils;
 
 import java.util.Date;
 import java.util.UUID;
@@ -27,13 +27,16 @@ public class CrimeFragment extends Fragment {
 
     public static final String ITEM_ID = CrimeFragment.class + ".item_id";
     public static final int REQUEST_DATE = 0;
+    public static final int REQUEST_PHOTO = 1;
     private static final String DATE_PATTERN = "yyy-MM-dd";
+    private static final String DIALOG_IMAGE = "image";
 
     private Crime document;
     private CheckBox solvedCheckBox;
     private Button dateButton;
     private EditText titleEditor;
     private CrimeLab store;
+    private ImageView photoPreview;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         CrimeFragment fragment = new CrimeFragment();
@@ -63,50 +66,31 @@ public class CrimeFragment extends Fragment {
         setupTitleEditor(view);
         setupDateButton(view);
         setupSolvedCheckBox(view);
-        updateControls();
+        setupCameraButton(view);
+        setupPhotoPreview(view);
 
         return view;
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_DATE) {
-            Date date = (Date) data.getSerializableExtra(DatePickerFragment.DATE_VALUE);
-            document.setDate(date);
-            updateControls();
-        }
-    }
+    private void setupPhotoPreview(View view) {
+        photoPreview = (ImageView) view.findViewById(R.id.crime_photo_preview);
+        photoPreview.setOnClickListener(new View.OnClickListener() {
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.crime, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onGoBack();
-                return true;
-            case R.id.menu_item_remove_crime:
-                onRemoveItem();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        store.save();
+            @Override
+            public void onClick(View v) {
+                Photo photo = document.getPhoto();
+                if (photo != null) {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    String path = getActivity().getFileStreamPath(photo.getFilename()).getAbsolutePath();
+                    ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
+                }
+            }
+        });
     }
 
     private void setupActionBar() {
         if (NavUtils.getParentActivityName(getActivity()) != null) {
-            ActionBarUtil.setDisplayHomeAsUpEnabled(getActivity(), true);
+            ActionBarUtils.setDisplayHomeAsUpEnabled(getActivity(), true);
         }
     }
 
@@ -156,10 +140,83 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-    private void updateControls() {
-        titleEditor.setText(document.getTitle());
-        dateButton.setText(DateFormat.format(DATE_PATTERN, document.getDate()));
-        solvedCheckBox.setChecked(document.isSolved());
+    private void setupCameraButton(View view) {
+        ImageButton photoButton = (ImageButton) view.findViewById(R.id.crime_camera_button);
+
+        photoButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CrimeCameraActivity.class);
+                startActivityForResult(intent, REQUEST_PHOTO);
+            }
+        });
+
+        PackageManager pm = getActivity().getPackageManager();
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) && !pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
+            photoButton.setEnabled(false);
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            switch (requestCode) {
+                case REQUEST_DATE:
+                    Date date = (Date) data.getSerializableExtra(DatePickerFragment.DATE_VALUE);
+                    document.setDate(date);
+                    updateControls();
+                    break;
+                case REQUEST_PHOTO:
+                    String fileName = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+                    if (fileName != null) {
+                        Photo photo = new Photo();
+                        photo.setFilename(fileName);
+                        document.setPhoto(photo);
+                        updateControls();
+                    }
+                    break;
+            }
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.crime, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onGoBack();
+                return true;
+            case R.id.menu_item_remove_crime:
+                onRemoveItem();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateControls();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        PictureUtils.cleanImageView(photoPreview);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        store.save();
     }
 
     private void onGoBack() {
@@ -171,6 +228,20 @@ public class CrimeFragment extends Fragment {
     private void onRemoveItem() {
         store.remove(document);
         onGoBack();
+    }
+
+    private void updateControls() {
+        titleEditor.setText(document.getTitle());
+        dateButton.setText(DateFormat.format(DATE_PATTERN, document.getDate()));
+        solvedCheckBox.setChecked(document.isSolved());
+
+        BitmapDrawable bitmap = null;
+        Photo photo = document.getPhoto();
+        if (photo != null) {
+            String path = getActivity().getFileStreamPath(photo.getFilename()).getAbsolutePath();
+            bitmap = PictureUtils.getScaledDrawable(getActivity(), path);
+        }
+        photoPreview.setImageDrawable(bitmap);
     }
 
 }

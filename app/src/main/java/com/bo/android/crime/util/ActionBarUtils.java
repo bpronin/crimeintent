@@ -5,9 +5,9 @@ import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Build;
 
-public abstract class ActionBarUtil {
+public abstract class ActionBarUtils {
 
-    private ActionBarUtil() {
+    private ActionBarUtils() {
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)

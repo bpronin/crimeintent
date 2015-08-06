@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import com.bo.android.R;
-import com.bo.android.crime.util.ActionBarUtil;
+import com.bo.android.crime.util.ActionBarUtils;
 
 import java.util.UUID;
 
@@ -40,7 +40,7 @@ public class CrimePagerActivity extends FragmentActivity {
 
             public void onPageSelected(int pos) {
                 /* setTitle(store.getAll().get(pos).getTitle()); */
-                ActionBarUtil.setSubtitle(CrimePagerActivity.this, store.getAll().get(pos).getTitle());
+                ActionBarUtils.setSubtitle(CrimePagerActivity.this, store.getAll().get(pos).getTitle());
             }
         });
 

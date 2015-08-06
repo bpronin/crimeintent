@@ -1,7 +1,7 @@
 package com.bo.android.crime;
 
 import android.content.Context;
-import com.bo.android.crime.util.LogUtil;
+import com.bo.android.crime.util.LogUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -69,7 +69,7 @@ public class CrimeLab {
         try {
             serializer.load();
         } catch (Exception x) {
-            LogUtil.error(this, x);
+            LogUtils.error(this, x);
         }
     }
 
@@ -77,7 +77,7 @@ public class CrimeLab {
         try {
             serializer.save();
         } catch (Exception x) {
-            LogUtil.error(this, x);
+            LogUtils.error(this, x);
         }
     }
 
