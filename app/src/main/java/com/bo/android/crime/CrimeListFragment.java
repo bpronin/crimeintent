@@ -121,7 +121,7 @@ public class CrimeListFragment extends ListFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        getActivity().getMenuInflater().inflate(R.menu.crime_list_item, menu);
+        getActivity().getMenuInflater().inflate(R.menu.list_item_crime, menu);
     }
 
     @Override
@@ -184,7 +184,7 @@ public class CrimeListFragment extends ListFragment {
     private class ListMultiChoiceModeListener implements MultiChoiceModeListener {
 
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
-            mode.getMenuInflater().inflate(R.menu.crime_list_item, menu);
+            mode.getMenuInflater().inflate(R.menu.list_item_crime, menu);
             return true;
         }
 
