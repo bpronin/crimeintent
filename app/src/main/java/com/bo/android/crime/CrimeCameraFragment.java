@@ -22,7 +22,6 @@ import java.util.List;
 public class CrimeCameraFragment extends Fragment {
 
     public static final String EXTRA_PHOTO_FILENAME = CrimeCameraFragment.class + "photo_file_name";
-    private static int counter;
 
     private Camera camera;
     private View progressContainer;

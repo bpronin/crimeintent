@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.*;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import com.bo.android.R;
@@ -60,7 +61,7 @@ public class CrimeListFragment extends ListFragment {
 
             @Override
             public void onClick(View v) {
-                onNewItem();
+                addItem();
             }
 
         });
@@ -128,11 +129,11 @@ public class CrimeListFragment extends ListFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_new_crime:
-                onNewItem();
+                addItem();
                 return true;
 /*
             case R.id.menu_item_show_subtitle:
-                onSwitchSubtitle(item);
+                switchSubtitle(item);
                 return true;
 */
             default:
@@ -144,16 +145,14 @@ public class CrimeListFragment extends ListFragment {
     public boolean onContextItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_remove_crime:
-                int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
-                store.remove(adapter.getItem(position));
-                adapter.notifyDataSetChanged();
+                removeItem(item);
                 return true;
             default:
                 return super.onContextItemSelected(item);
         }
     }
 
-    private void onNewItem() {
+    private void addItem() {
         Crime crime = new Crime();
         store.add(crime);
 
@@ -162,9 +161,15 @@ public class CrimeListFragment extends ListFragment {
         startActivityForResult(intent, 0);
     }
 
+    private void removeItem(MenuItem item) {
+        int position = ((AdapterContextMenuInfo) item.getMenuInfo()).position;
+        store.remove(adapter.getItem(position));
+        adapter.notifyDataSetChanged();
+    }
+
 /*
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    private void onSwitchSubtitle(MenuItem item) {
+    private void switchSubtitle(MenuItem item) {
         ActionBar actionBar = getActivity().getActionBar();
         if (actionBar != null) {
             if (actionBar.getSubtitle() == null) {

@@ -17,10 +17,10 @@ public abstract class FileUtils {
 
     @NonNull
     public static File getDataPath(Context context) {
-//        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-//        path.mkdirs();
-//        return path;
-        return context.getFilesDir();
+        File path = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), "test");
+        path.mkdirs();
+        return path;
+//        return context.getFilesDir();
     }
 
     public static File createPhotoFile(Context context) {

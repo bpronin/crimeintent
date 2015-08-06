@@ -165,18 +165,10 @@ public class CrimeFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_DATE:
-                    Date date = (Date) data.getSerializableExtra(DatePickerFragment.DATE_VALUE);
-                    document.setDate(date);
-                    updateControls();
+                    editDate(data);
                     break;
                 case REQUEST_PHOTO:
-                    String fileName = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
-                    if (fileName != null) {
-                        Photo photo = new Photo();
-                        photo.setFilename(fileName);
-                        document.setPhoto(photo);
-                        updateControls();
-                    }
+                    updatePhoto(data);
                     break;
             }
         }
@@ -192,10 +184,13 @@ public class CrimeFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                onGoBack();
+                goBack();
+                return true;
+            case R.id.menu_item_new_crime:
+                addItem();
                 return true;
             case R.id.menu_item_remove_crime:
-                onRemoveItem();
+                removeItem();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -220,15 +215,24 @@ public class CrimeFragment extends Fragment {
         store.save();
     }
 
-    private void onGoBack() {
+    private void goBack() {
         if (NavUtils.getParentActivityName(getActivity()) != null) {
             NavUtils.navigateUpFromSameTask(getActivity());
         }
     }
 
-    private void onRemoveItem() {
+    private void addItem() {
+        Crime crime = new Crime();
+        store.add(crime);
+
+        Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
+        intent.putExtra(CrimeFragment.ITEM_ID, crime.getId());
+        startActivity(intent);
+    }
+
+    private void removeItem() {
         store.remove(document);
-        onGoBack();
+        goBack();
     }
 
     private void updateControls() {
@@ -243,6 +247,22 @@ public class CrimeFragment extends Fragment {
             bitmap = PictureUtils.getScaledDrawable(getActivity(), photoPath);
         }
         photoPreview.setImageDrawable(bitmap);
+    }
+
+    private void updatePhoto(Intent data) {
+        String fileName = data.getStringExtra(CrimeCameraFragment.EXTRA_PHOTO_FILENAME);
+        if (fileName != null) {
+            Photo photo = new Photo();
+            photo.setFilename(fileName);
+            document.setPhoto(photo);
+            updateControls();
+        }
+    }
+
+    private void editDate(Intent data) {
+        Date date = (Date) data.getSerializableExtra(DatePickerFragment.DATE_VALUE);
+        document.setDate(date);
+        updateControls();
     }
 
 }
