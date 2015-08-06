@@ -2,7 +2,6 @@ package com.bo.android.crime;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Build;
@@ -11,12 +10,13 @@ import android.support.v4.app.Fragment;
 import android.view.*;
 import android.widget.ImageButton;
 import com.bo.android.R;
+import com.bo.android.crime.util.FileUtils;
 import com.bo.android.crime.util.LogUtils;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.UUID;
 
 @SuppressWarnings("deprecation")
 public class CrimeCameraFragment extends Fragment {
@@ -180,28 +180,28 @@ public class CrimeCameraFragment extends Fragment {
 //            }
 
             getActivity().setResult(Activity.RESULT_CANCELED);
-            String filename = UUID.randomUUID().toString() + ".jpg";
-//            String filename = (++counter) + ".jpg";
+
+            File file = FileUtils.createPhotoFile(getActivity());
             try {
-                FileOutputStream os = getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+                FileOutputStream out = new FileOutputStream(file);
                 try {
-                    os.write(data);
-                    LogUtils.info(this, "JPEG saved at " + filename);
+                    out.write(data);
+                    LogUtils.info(this, "JPEG saved at " + file);
 
                     Intent intent = new Intent();
-                    intent.putExtra(EXTRA_PHOTO_FILENAME, filename);
+                    intent.putExtra(EXTRA_PHOTO_FILENAME, file.getName());
                     getActivity().setResult(Activity.RESULT_OK, intent);
                 } catch (Exception x) {
-                    LogUtils.error(this, "Error writing to file " + filename, x);
+                    LogUtils.error(this, "Error writing to file " + file, x);
                 } finally {
                     try {
-                        os.close();
+                        out.close();
                     } catch (Exception x) {
-                        LogUtils.error(this, "Error closing file " + filename, x);
+                        LogUtils.error(this, "Error closing file " + file, x);
                     }
                 }
             } catch (Exception x) {
-                LogUtils.error(this, "Error opening file stream" + filename, x);
+                LogUtils.error(this, "Error opening file stream" + file, x);
             }
 
             getActivity().finish();

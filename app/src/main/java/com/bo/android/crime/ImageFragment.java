@@ -21,14 +21,15 @@ public class ImageFragment extends DialogFragment {
         ImageFragment fragment = new ImageFragment();
         fragment.setArguments(arguments);
         fragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+
         return fragment;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        imageView = new ImageView(getActivity());
         String path = (String) getArguments().getSerializable(EXTRA_IMAGE_PATH);
         BitmapDrawable image = PictureUtils.getScaledDrawable(getActivity(), path);
-        imageView = new ImageView(getActivity());
         imageView.setImageDrawable(image);
         return imageView;
     }

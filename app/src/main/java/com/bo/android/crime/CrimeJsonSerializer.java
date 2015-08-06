@@ -1,8 +1,8 @@
 package com.bo.android.crime;
 
 import android.content.Context;
-import android.os.Environment;
 import android.support.annotation.Nullable;
+import com.bo.android.crime.util.FileUtils;
 import com.bo.android.crime.util.LogUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,16 +23,12 @@ public class CrimeJsonSerializer {
     private static final String JSON_PHOTO = "photo";
 
     private final File file;
+    private final File path;
     private CrimeLab data;
 
     public CrimeJsonSerializer(CrimeLab data, Context context) {
         this.data = data;
-
-        File path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-        path.mkdirs();
-
-//        File path = context.getFilesDir();
-
+        path = FileUtils.getDataPath(context);
         file = new File(path, "crime-data.json");
     }
 
@@ -52,6 +48,8 @@ public class CrimeJsonSerializer {
         }
 
         LogUtils.info(this, "File '" + file + "' saved");
+
+        purgePhotos();
     }
 
     public void load() throws JSONException, IOException {
@@ -126,6 +124,36 @@ public class CrimeJsonSerializer {
         Photo photo = new Photo();
         photo.setFilename(json.getString(JSON_FILENAME));
         return photo;
+    }
+
+    private void purgePhotos() {
+        File[] photos = path.listFiles(new FilenameFilter() {
+
+            @Override
+            public boolean accept(File dir, String filename) {
+                return filename.startsWith(FileUtils.PHOTO_PREFIX);
+            }
+        });
+
+        for (File file : photos) {
+            if (!hasItemForPhoto(file.getName())) {
+                if (!file.delete()) {
+                    LogUtils.warn(this, "Cannot delete file '" + file + "'");
+                } else {
+                    LogUtils.info(this, "Removed image file '" + file + "'");
+                }
+            }
+        }
+    }
+
+    private boolean hasItemForPhoto(String photoFilename) {
+        for (Crime crime : data.getAll()) {
+            Photo photo = crime.getPhoto();
+            if (photo != null && photoFilename.equals(photo.getFilename())) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

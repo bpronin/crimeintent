@@ -13,6 +13,10 @@ public class LogUtils {
         Log.i(owner.getClass().getName(), message);
     }
 
+    public static void warn(Object owner, String message) {
+        Log.w(owner.getClass().getName(), message);
+    }
+
     public static void error(Object owner, Exception x) {
         error(owner, x.getMessage(), x);
     }

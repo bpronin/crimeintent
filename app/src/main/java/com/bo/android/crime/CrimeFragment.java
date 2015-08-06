@@ -18,6 +18,7 @@ import android.view.*;
 import android.widget.*;
 import com.bo.android.R;
 import com.bo.android.crime.util.ActionBarUtils;
+import com.bo.android.crime.util.FileUtils;
 import com.bo.android.crime.util.PictureUtils;
 
 import java.util.Date;
@@ -80,9 +81,9 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
                 Photo photo = document.getPhoto();
                 if (photo != null) {
+                    String photoPath = FileUtils.getPhotoFile(getActivity(), photo).getAbsolutePath();
                     FragmentManager fm = getActivity().getSupportFragmentManager();
-                    String path = getActivity().getFileStreamPath(photo.getFilename()).getAbsolutePath();
-                    ImageFragment.newInstance(path).show(fm, DIALOG_IMAGE);
+                    ImageFragment.newInstance(photoPath).show(fm, DIALOG_IMAGE);
                 }
             }
         });
@@ -238,8 +239,8 @@ public class CrimeFragment extends Fragment {
         BitmapDrawable bitmap = null;
         Photo photo = document.getPhoto();
         if (photo != null) {
-            String path = getActivity().getFileStreamPath(photo.getFilename()).getAbsolutePath();
-            bitmap = PictureUtils.getScaledDrawable(getActivity(), path);
+            String photoPath = FileUtils.getPhotoFile(getActivity(), photo).getAbsolutePath();
+            bitmap = PictureUtils.getScaledDrawable(getActivity(), photoPath);
         }
         photoPreview.setImageDrawable(bitmap);
     }

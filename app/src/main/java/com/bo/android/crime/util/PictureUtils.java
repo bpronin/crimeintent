@@ -15,7 +15,10 @@ public abstract class PictureUtils {
     public static void cleanImageView(ImageView view) {
         if (view.getDrawable() instanceof BitmapDrawable) {
             BitmapDrawable drawable = (BitmapDrawable) view.getDrawable();
-            drawable.getBitmap().recycle();
+            Bitmap bitmap = drawable.getBitmap();
+            if (bitmap != null) {
+                bitmap.recycle();
+            }
             view.setImageDrawable(null);
         }
     }
