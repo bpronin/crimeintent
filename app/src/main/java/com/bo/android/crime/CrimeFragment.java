@@ -5,7 +5,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -240,13 +240,13 @@ public class CrimeFragment extends Fragment {
         dateButton.setText(DateFormat.format(DATE_PATTERN, document.getDate()));
         solvedCheckBox.setChecked(document.isSolved());
 
-        BitmapDrawable bitmap = null;
+        Bitmap bitmap = null;
         Photo photo = document.getPhoto();
         if (photo != null) {
             String photoPath = FileUtils.getPhotoFile(getActivity(), photo).getAbsolutePath();
-            bitmap = PictureUtils.getScaledDrawable(getActivity(), photoPath);
+            bitmap = PictureUtils.getScaledRotatedBitmap(photoPath, getActivity());
         }
-        photoPreview.setImageDrawable(bitmap);
+        photoPreview.setImageBitmap(bitmap);
     }
 
     private void updatePhoto(Intent data) {

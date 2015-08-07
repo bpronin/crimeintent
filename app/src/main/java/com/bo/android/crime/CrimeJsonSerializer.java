@@ -2,8 +2,8 @@ package com.bo.android.crime;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.bo.android.crime.util.FileUtils;
-import com.bo.android.crime.util.LogUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,6 +14,8 @@ import java.util.Date;
 import java.util.UUID;
 
 public class CrimeJsonSerializer {
+
+    private static final String TAG = "CrimeJsonSerializer";
 
     private static final String JSON_ID = "id";
     private static final String JSON_TITLE = "title";
@@ -47,7 +49,7 @@ public class CrimeJsonSerializer {
             writer.close();
         }
 
-        LogUtils.info(this, "File '" + file + "' saved");
+        Log.i(TAG, "File '" + file + "' saved");
 
         purgePhotos();
     }
@@ -76,9 +78,9 @@ public class CrimeJsonSerializer {
                 data.add(crimeFromJson(array.getJSONObject(i)));
             }
 
-            LogUtils.info(this, "File '" + file + "' loaded");
+            Log.i(TAG, "File '" + file + "' loaded");
         } catch (FileNotFoundException x) {
-            LogUtils.debug(this, "File does not exist");
+            Log.d(TAG, "File does not exist");
         }
     }
 
@@ -138,9 +140,9 @@ public class CrimeJsonSerializer {
         for (File file : photos) {
             if (!hasItemForPhoto(file.getName())) {
                 if (!file.delete()) {
-                    LogUtils.warn(this, "Cannot delete file '" + file + "'");
+                    Log.w(TAG, "Cannot delete file '" + file + "'");
                 } else {
-                    LogUtils.info(this, "Removed image file '" + file + "'");
+                    Log.i(TAG, "Removed image file '" + file + "'");
                 }
             }
         }

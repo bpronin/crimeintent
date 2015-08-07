@@ -5,17 +5,18 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.*;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import com.bo.android.R;
-import com.bo.android.crime.util.LogUtils;
 
 import static android.widget.AbsListView.MultiChoiceModeListener;
 import static android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class CrimeListFragment extends ListFragment {
+
+    private static final String TAG = "CrimeListFragment";
 
     private CrimeLab store;
     /* private boolean subtitleVisible; */
@@ -212,18 +213,18 @@ public class CrimeListFragment extends ListFragment {
         }
 
         public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-            LogUtils.info(this, "onPrepareActionMode");
+            Log.i(TAG, "onPrepareActionMode");
             return false;
         }
 
         public void onItemCheckedStateChanged(ActionMode mode, int position, long id, boolean checked) {
             /* do nothing */
-            LogUtils.info(this, "onItemCheckedStateChanged");
+            Log.i(TAG, "onItemCheckedStateChanged");
         }
 
         public void onDestroyActionMode(ActionMode mode) {
             /* do nothing */
-            LogUtils.info(this, "onDestroyActionMode");
+            Log.i(TAG, "onDestroyActionMode");
         }
     }
 

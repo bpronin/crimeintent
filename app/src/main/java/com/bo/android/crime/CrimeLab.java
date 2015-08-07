@@ -1,7 +1,7 @@
 package com.bo.android.crime;
 
 import android.content.Context;
-import com.bo.android.crime.util.LogUtils;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,7 @@ import java.util.UUID;
 
 public class CrimeLab {
 
+    private static final String TAG = "CrimeLab";
     private static CrimeLab instance;
 
     private List<Crime> items = new ArrayList<>();
@@ -69,7 +70,7 @@ public class CrimeLab {
         try {
             serializer.load();
         } catch (Exception x) {
-            LogUtils.error(this, x);
+            Log.e(TAG, x.getMessage(), x);
         }
     }
 
@@ -77,7 +78,7 @@ public class CrimeLab {
         try {
             serializer.save();
         } catch (Exception x) {
-            LogUtils.error(this, x);
+            Log.e(TAG, x.getMessage(), x);
         }
     }
 

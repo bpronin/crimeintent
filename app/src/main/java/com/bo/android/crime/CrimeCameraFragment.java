@@ -7,21 +7,23 @@ import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.*;
 import android.widget.ImageButton;
 import com.bo.android.R;
 import com.bo.android.crime.util.FileUtils;
-import com.bo.android.crime.util.LogUtils;
+import com.bo.android.crime.util.PictureUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class CrimeCameraFragment extends Fragment {
 
+    private static final String TAG = CrimeCameraFragment.class.getName();
     public static final String EXTRA_PHOTO_FILENAME = CrimeCameraFragment.class + "photo_file_name";
+    public static final int CAMERA_ID = 0;
 
     private Camera camera;
     private View progressContainer;
@@ -52,6 +54,11 @@ public class CrimeCameraFragment extends Fragment {
         });
     }
 
+    private void setupProgressBar(View view) {
+        progressContainer = view.findViewById(R.id.camera_progress_bar_container);
+        progressContainer.setVisibility(View.INVISIBLE);
+    }
+
     private void setupSurface(View view) {
         SurfaceView surfaceView = (SurfaceView) view.findViewById(R.id.camera_surface_view);
         SurfaceHolder holder = surfaceView.getHolder();
@@ -59,29 +66,29 @@ public class CrimeCameraFragment extends Fragment {
         holder.addCallback(new CameraSurfaceCallback());
     }
 
-    private void setupProgressBar(View view) {
-        progressContainer = view.findViewById(R.id.camera_progress_bar_container);
-        progressContainer.setVisibility(View.INVISIBLE);
-    }
-
     @TargetApi(Build.VERSION_CODES.GINGERBREAD)
     @Override
     public void onResume() {
         super.onResume();
+
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
-                camera = Camera.open(0);
+                camera = Camera.open(CAMERA_ID);
             } else {
                 camera = Camera.open();
             }
         } catch (Exception x) {
-            LogUtils.error(this, x);
+            Log.e(TAG, x.getMessage(), x);
         }
     }
 
     @Override
     public void onPause() {
         super.onPause();
+        releaseCamera();
+    }
+
+    private void releaseCamera() {
         if (camera != null) {
             camera.release();
             camera = null;
@@ -97,7 +104,7 @@ public class CrimeCameraFragment extends Fragment {
                     camera.setPreviewDisplay(holder);
                 }
             } catch (IOException x) {
-                LogUtils.error(this, x);
+                Log.e(TAG, x.getMessage(), x);
             }
         }
 
@@ -110,36 +117,33 @@ public class CrimeCameraFragment extends Fragment {
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            if (camera == null) return;
+            if (camera != null) {
+                Log.d(TAG, "surfaceChanged ");
 
-            Camera.Parameters parameters = camera.getParameters();
-            Camera.Size pvSize = getBestSupportedSize(parameters.getSupportedPreviewSizes(), width, height);
-            parameters.setPreviewSize(pvSize.width, pvSize.height);
-            Camera.Size pcSize = getBestSupportedSize(parameters.getSupportedPictureSizes(), width, height);
-            parameters.setPictureSize(pcSize.width, pcSize.height);
-            camera.setParameters(parameters);
+                try {
+                    camera.stopPreview();
+                } catch (Exception x) {
+                    Log.i(TAG, "Cannot stop camera preview: " + x.getMessage());
+                }
 
-            try {
-                camera.startPreview();
-            } catch (Exception x) {
-                LogUtils.error(this, x);
-                camera.release();
-                camera = null;
-            }
-        }
+                Camera.Parameters params = camera.getParameters();
+                Camera.Size pvSize = PictureUtils.getCameraBestSupportedSize(params.getSupportedPreviewSizes(), width, height);
+                params.setPreviewSize(pvSize.width, pvSize.height);
+                Camera.Size pcSize = PictureUtils.getCameraBestSupportedSize(params.getSupportedPictureSizes(), width, height);
+                params.setPictureSize(pcSize.width, pcSize.height);
+                camera.setParameters(params);
 
-        private Camera.Size getBestSupportedSize(List<Camera.Size> sizes, int width, int height) {
-            Camera.Size bestSize = sizes.get(0);
-            int largestArea = bestSize.width * bestSize.height;
-            for (Camera.Size size : sizes) {
-                int area = size.width * size.height;
-                if (area > largestArea) {
-                    bestSize = size;
-                    largestArea = area;
+                PictureUtils.updateCameraDisplayOrientation(getActivity(), CAMERA_ID, camera);
+
+                try {
+                    camera.startPreview();
+                } catch (Exception x) {
+                    Log.d(TAG, "Error starting camera preview: " + x.getMessage());
+                    releaseCamera();
                 }
             }
-            return bestSize;
         }
+
     }
 
     private class CameraShutterCallback implements Camera.ShutterCallback {
@@ -185,22 +189,22 @@ public class CrimeCameraFragment extends Fragment {
                 FileOutputStream out = new FileOutputStream(file);
                 try {
                     out.write(data);
-                    LogUtils.info(this, "JPEG saved at " + file);
+                    Log.i(TAG, "JPEG saved at " + file);
 
                     Intent intent = new Intent();
                     intent.putExtra(EXTRA_PHOTO_FILENAME, file.getName());
                     getActivity().setResult(Activity.RESULT_OK, intent);
                 } catch (Exception x) {
-                    LogUtils.error(this, "Error writing to file " + file, x);
+                    Log.e(TAG, "Error writing to file " + file, x);
                 } finally {
                     try {
                         out.close();
                     } catch (Exception x) {
-                        LogUtils.error(this, "Error closing file " + file, x);
+                        Log.e(TAG, "Error closing file " + file, x);
                     }
                 }
             } catch (Exception x) {
-                LogUtils.error(this, "Error opening file stream" + file, x);
+                Log.e(TAG, "Error opening file stream" + file, x);
             }
 
             getActivity().finish();

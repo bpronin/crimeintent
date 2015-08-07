@@ -1,6 +1,6 @@
 package com.bo.android.crime;
 
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
@@ -20,17 +20,26 @@ public class ImageFragment extends DialogFragment {
 
         ImageFragment fragment = new ImageFragment();
         fragment.setArguments(arguments);
-        fragment.setStyle(DialogFragment.STYLE_NO_TITLE, 0);
 
         return fragment;
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setStyle(DialogFragment.STYLE_NO_TITLE, 0);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         imageView = new ImageView(getActivity());
+//        imageView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        imageView.setLayoutParams(new ViewGroup.LayoutParams(800, 800));
+        imageView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
         String path = (String) getArguments().getSerializable(EXTRA_IMAGE_PATH);
-        BitmapDrawable image = PictureUtils.getScaledDrawable(getActivity(), path);
-        imageView.setImageDrawable(image);
+        Bitmap bitmap = PictureUtils.getScaledRotatedBitmap(path, getActivity());
+//        Bitmap bitmap = BitmapFactory.decodeFile(path);
+        imageView.setImageBitmap(bitmap);
         return imageView;
     }
 
