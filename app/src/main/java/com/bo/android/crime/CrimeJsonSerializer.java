@@ -23,6 +23,7 @@ public class CrimeJsonSerializer {
     private static final String JSON_DATE = "date";
     private static final String JSON_FILENAME = "filename";
     private static final String JSON_PHOTO = "photo";
+    private static final String JSON_SUSPECT = "suspect";
 
     private final File file;
     private final File path;
@@ -88,44 +89,47 @@ public class CrimeJsonSerializer {
         JSONObject json = new JSONObject();
 
         json.put(JSON_ID, crime.getId().toString());
-        json.put(JSON_TITLE, crime.getTitle());
-        json.put(JSON_SOLVED, crime.isSolved());
-        json.put(JSON_DATE, crime.getDate().getTime());
-
-        Photo photo = crime.getPhoto();
-        if (photo != null) {
-            json.put(JSON_PHOTO, photoToJson(photo));
-        }
+        json.putOpt(JSON_TITLE, crime.getTitle());
+        json.putOpt(JSON_SOLVED, crime.isSolved());
+        json.putOpt(JSON_DATE, crime.getDate().getTime());
+        json.putOpt(JSON_SUSPECT, crime.getSuspect());
+        json.putOpt(JSON_PHOTO, photoToJson(crime.getPhoto()));
 
         return json;
     }
 
     public JSONObject photoToJson(Photo photo) throws JSONException {
-        JSONObject json = new JSONObject();
-        json.putOpt(JSON_FILENAME, photo.getFilename());
-        return json;
+        if (photo != null) {
+            JSONObject json = new JSONObject();
+            json.putOpt(JSON_FILENAME, photo.getFilename());
+            return json;
+        } else {
+            return null;
+        }
     }
 
     public Crime crimeFromJson(JSONObject json) throws JSONException {
         Crime crime = new Crime();
 
         crime.setId(UUID.fromString(json.getString(JSON_ID)));
-        crime.setTitle(json.getString(JSON_TITLE));
-        crime.setSolved(json.getBoolean(JSON_SOLVED));
+        crime.setTitle(json.optString(JSON_TITLE));
+        crime.setSolved(json.optBoolean(JSON_SOLVED));
         crime.setDate(new Date(json.getLong(JSON_DATE)));
-
-        if (!json.isNull(JSON_PHOTO)) {
-            crime.setPhoto(photoFromJson(json.getJSONObject(JSON_PHOTO)));
-        }
+        crime.setSuspect(json.optString(JSON_SUSPECT));
+        crime.setPhoto(photoFromJson(json.optJSONObject(JSON_PHOTO)));
 
         return crime;
     }
 
     @Nullable
     public Photo photoFromJson(JSONObject json) throws JSONException {
-        Photo photo = new Photo();
-        photo.setFilename(json.getString(JSON_FILENAME));
-        return photo;
+        if (json.has(JSON_FILENAME)) {
+            Photo photo = new Photo();
+            photo.setFilename(json.getString(JSON_FILENAME));
+            return photo;
+        }else{
+            return null;
+        }
     }
 
     private void purgePhotos() {

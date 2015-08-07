@@ -69,11 +69,23 @@ public class CrimeFragment extends Fragment {
         setupSolvedCheckBox(view);
         setupCameraButton(view);
         setupPhotoPreview(view);
+        setupReportButton(view);
 
         return view;
     }
 
-    private void setupPhotoPreview(View view) {
+    private void setupReportButton(View view) {
+        Button button = (Button) view.findViewById(R.id.crime_report_button);
+        button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                sendReport();
+            }
+        });
+    }
+
+private void setupPhotoPreview(View view) {
         photoPreview = (ImageView) view.findViewById(R.id.crime_photo_preview);
         photoPreview.setOnClickListener(new View.OnClickListener() {
 
@@ -165,7 +177,7 @@ public class CrimeFragment extends Fragment {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case REQUEST_DATE:
-                    editDate(data);
+                    showDateEditor(data);
                     break;
                 case REQUEST_PHOTO:
                     updatePhoto(data);
@@ -259,10 +271,34 @@ public class CrimeFragment extends Fragment {
         }
     }
 
-    private void editDate(Intent data) {
+    private void showDateEditor(Intent data) {
         Date date = (Date) data.getSerializableExtra(DatePickerFragment.DATE_VALUE);
         document.setDate(date);
         updateControls();
+    }
+
+    private String createReport() {
+        String solvedString = document.isSolved() ?
+                getString(R.string.crime_report_solved) :
+                getString(R.string.crime_report_unsolved);
+
+        String dateString = DateFormat.format("EEE, MMM dd", document.getDate()).toString();
+
+        String suspect = document.getSuspect() == null ?
+                getString(R.string.crime_report_no_suspect) :
+                getString(R.string.crime_report_suspect, document.getSuspect());
+
+        return getString(R.string.crime_report, document.getTitle(), dateString, solvedString, suspect);
+    }
+
+    private void sendReport() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, createReport());
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
+        intent = Intent.createChooser(intent, getString(R.string.send_report));
+
+        startActivity(intent);
     }
 
 }

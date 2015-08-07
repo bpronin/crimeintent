@@ -15,6 +15,7 @@ public class Crime {
     private Date date;
     private boolean solved;
     private Photo photo;
+    private String suspect;
 
     public Crime() {
         id = UUID.randomUUID();
@@ -61,6 +62,14 @@ public class Crime {
         this.photo = photo;
     }
 
+    public String getSuspect() {
+        return suspect;
+    }
+
+    public void setSuspect(String suspect) {
+        this.suspect = suspect;
+    }
+
     @Override
     public String toString() {
         return "Crime{" +
@@ -69,6 +78,7 @@ public class Crime {
                 ", date=" + date +
                 ", solved=" + solved +
                 ", photo=" + photo +
+                ", suspect='" + suspect + '\'' +
                 '}';
     }
 }
