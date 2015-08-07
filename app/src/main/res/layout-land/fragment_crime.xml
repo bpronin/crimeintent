@@ -102,6 +102,7 @@
         android:layout_marginRight="16dp"
         android:orientation="horizontal">
 
+<!--
         <Button
             android:id="@+id/crime_suspect_button"
             android:layout_width="0dp"
@@ -109,6 +110,29 @@
             android:layout_weight="1"
             android:text="@string/crime_suspect_text"
             />
+-->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/crime_suspect_button"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:text="@string/crime_suspect_text"
+                android:layout_weight="1"
+                />
+
+            <ImageButton
+                android:id="@+id/crime_dial_suspect_button"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/crime_dial_suspect_text"
+                android:src="@android:drawable/ic_menu_call"
+                />
+        </LinearLayout>
 
         <Button
             android:id="@+id/crime_report_button"
