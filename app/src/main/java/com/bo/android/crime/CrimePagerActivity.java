@@ -44,7 +44,7 @@ public class CrimePagerActivity extends FragmentActivity {
             }
         });
 
-        UUID itemId = (UUID) getIntent().getSerializableExtra(CrimeFragment.ITEM_ID);
+        UUID itemId = (UUID) getIntent().getSerializableExtra(CrimeFragment.EXTRA_ITEM_ID);
         pager.setCurrentItem(store.indexOfId(itemId));
 
         setContentView(pager);

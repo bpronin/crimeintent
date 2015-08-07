@@ -5,9 +5,14 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.NavUtils;
@@ -22,13 +27,15 @@ import com.bo.android.crime.util.FileUtils;
 import com.bo.android.crime.util.PictureUtils;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 public class CrimeFragment extends Fragment {
 
-    public static final String ITEM_ID = CrimeFragment.class + ".item_id";
     public static final int REQUEST_DATE = 0;
     public static final int REQUEST_PHOTO = 1;
+    public static final int REQUEST_CONTACT = 2;
+    public static final String EXTRA_ITEM_ID = CrimeFragment.class + ".item_id";
     private static final String DATE_PATTERN = "yyy-MM-dd";
     private static final String DIALOG_IMAGE = "image";
 
@@ -38,12 +45,13 @@ public class CrimeFragment extends Fragment {
     private EditText titleEditor;
     private CrimeLab store;
     private ImageView photoPreview;
+    private Button suspectButton;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         CrimeFragment fragment = new CrimeFragment();
 
         Bundle args = new Bundle();
-        args.putSerializable(ITEM_ID, crimeId);
+        args.putSerializable(EXTRA_ITEM_ID, crimeId);
         fragment.setArguments(args);
 
         return fragment;
@@ -55,7 +63,7 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         store = CrimeLab.getInstance(getActivity());
-        document = store.getById((UUID) getArguments().getSerializable(ITEM_ID));
+        document = store.getById((UUID) getArguments().getSerializable(EXTRA_ITEM_ID));
     }
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
@@ -70,12 +78,26 @@ public class CrimeFragment extends Fragment {
         setupCameraButton(view);
         setupPhotoPreview(view);
         setupReportButton(view);
+        setupPickSuspectButton(view);
 
         return view;
     }
 
+    private void setupPickSuspectButton(View view) {
+        suspectButton = (Button) view.findViewById(R.id.crime_suspect_button);
+        suspectButton.setEnabled(hasActivities(getActivity(), createPickContactIntent()));
+        suspectButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                pickSuspect();
+            }
+        });
+    }
+
     private void setupReportButton(View view) {
         Button button = (Button) view.findViewById(R.id.crime_report_button);
+        button.setEnabled(hasActivities(getActivity(), createSendToIntent()));
         button.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -85,7 +107,7 @@ public class CrimeFragment extends Fragment {
         });
     }
 
-private void setupPhotoPreview(View view) {
+    private void setupPhotoPreview(View view) {
         photoPreview = (ImageView) view.findViewById(R.id.crime_photo_preview);
         photoPreview.setOnClickListener(new View.OnClickListener() {
 
@@ -182,6 +204,9 @@ private void setupPhotoPreview(View view) {
                 case REQUEST_PHOTO:
                     updatePhoto(data);
                     break;
+                case REQUEST_CONTACT:
+                    updateSuspect(data);
+                    break;
             }
         }
     }
@@ -238,7 +263,7 @@ private void setupPhotoPreview(View view) {
         store.add(crime);
 
         Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
-        intent.putExtra(CrimeFragment.ITEM_ID, crime.getId());
+        intent.putExtra(CrimeFragment.EXTRA_ITEM_ID, crime.getId());
         startActivity(intent);
     }
 
@@ -259,6 +284,12 @@ private void setupPhotoPreview(View view) {
             bitmap = PictureUtils.getScaledRotatedBitmap(photoPath, getActivity());
         }
         photoPreview.setImageBitmap(bitmap);
+
+        if (!"".equals(document.getSuspect())) {
+            suspectButton.setText(document.getSuspect());
+        } else {
+            suspectButton.setText(R.string.crime_suspect_text);
+        }
     }
 
     private void updatePhoto(Intent data) {
@@ -277,6 +308,25 @@ private void setupPhotoPreview(View view) {
         updateControls();
     }
 
+    private void updateSuspect(Intent data) {
+        Uri contactUri = data.getData();
+        String[] fields = new String[]{ContactsContract.Contacts.DISPLAY_NAME};
+
+        Cursor cursor = getActivity().getContentResolver().query(contactUri, fields, null, null, null);
+        if (cursor.getCount() != 0) {
+            cursor.moveToFirst();
+            document.setSuspect(cursor.getString(0));
+            cursor.close();
+            updateControls();
+        } else {
+            cursor.close();
+        }
+    }
+
+    private void pickSuspect() {
+        startActivityForResult(createPickContactIntent(), REQUEST_CONTACT);
+    }
+
     private String createReport() {
         String solvedString = document.isSolved() ?
                 getString(R.string.crime_report_solved) :
@@ -292,13 +342,29 @@ private void setupPhotoPreview(View view) {
     }
 
     private void sendReport() {
-        Intent intent = new Intent(Intent.ACTION_SEND);
-        intent.setType("text/plain");
+        Intent intent = createSendToIntent();
         intent.putExtra(Intent.EXTRA_TEXT, createReport());
         intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.crime_report_subject));
         intent = Intent.createChooser(intent, getString(R.string.send_report));
 
         startActivity(intent);
+    }
+
+    @NonNull
+    private Intent createPickContactIntent() {
+        return new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+    }
+
+    @NonNull
+    private Intent createSendToIntent() {
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        return intent;
+    }
+
+    private boolean hasActivities(Activity activity, Intent intent) {
+        List<ResolveInfo> activities = activity.getPackageManager().queryIntentActivities(intent, 0);
+        return activities.size() > 0;
     }
 
 }

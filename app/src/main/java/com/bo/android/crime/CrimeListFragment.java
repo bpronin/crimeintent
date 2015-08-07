@@ -97,7 +97,7 @@ public class CrimeListFragment extends ListFragment {
         Crime crime = adapter.getItem(position);
 
         Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
-        intent.putExtra(CrimeFragment.ITEM_ID, crime.getId());
+        intent.putExtra(CrimeFragment.EXTRA_ITEM_ID, crime.getId());
         startActivity(intent);
     }
 
@@ -158,7 +158,7 @@ public class CrimeListFragment extends ListFragment {
         store.add(crime);
 
         Intent intent = new Intent(getActivity(), CrimePagerActivity.class);
-        intent.putExtra(CrimeFragment.ITEM_ID, crime.getId());
+        intent.putExtra(CrimeFragment.EXTRA_ITEM_ID, crime.getId());
         startActivityForResult(intent, 0);
     }
 
