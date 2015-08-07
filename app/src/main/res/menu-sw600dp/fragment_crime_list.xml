@@ -3,10 +3,6 @@
     <item
         android:id="@+id/menu_item_new_crime"
         android:icon="@android:drawable/ic_menu_add"
-        android:title="@string/new_crime"/>
-    <!--
-    <item android:id="@+id/menu_item_show_subtitle"
-          android:title="@string/show_subtitle"
-          android:showAsAction="ifRoom"/>
-    -->
+        android:title="@string/new_crime"
+        android:showAsAction="ifRoom|withText"/>
 </menu>

@@ -123,7 +123,7 @@ public class CrimeJsonSerializer {
 
     @Nullable
     public Photo photoFromJson(JSONObject json) throws JSONException {
-        if (json.has(JSON_FILENAME)) {
+        if (json!= null && !json.isNull(JSON_FILENAME)) {
             Photo photo = new Photo();
             photo.setFilename(json.getString(JSON_FILENAME));
             return photo;

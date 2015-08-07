@@ -49,6 +49,7 @@ public class CrimeFragment extends Fragment {
     private ImageView photoPreview;
     private Button suspectButton;
     private ImageButton dialSuspectButton;
+    private Callbacks callbacks;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         CrimeFragment fragment = new CrimeFragment();
@@ -151,6 +152,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 document.setTitle(titleEditor.getText().toString());
+                callbacks.onItemUpdated(document);
             }
 
             @Override
@@ -186,6 +188,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 document.setSolved(solvedCheckBox.isChecked());
+                callbacks.onItemUpdated(document);
             }
         });
     }
@@ -206,6 +209,18 @@ public class CrimeFragment extends Fragment {
         if (!pm.hasSystemFeature(PackageManager.FEATURE_CAMERA) && !pm.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT)) {
             photoButton.setEnabled(false);
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        callbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach() {
+        callbacks = null;
+        super.onDetach();
     }
 
     @Override
@@ -252,7 +267,7 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        updateControls();
+        updateUI();
     }
 
     @Override
@@ -287,7 +302,7 @@ public class CrimeFragment extends Fragment {
         goBack();
     }
 
-    private void updateControls() {
+    private void updateUI() {
         titleEditor.setText(document.getTitle());
         dateButton.setText(DateFormat.format(DATE_PATTERN, document.getDate()));
         solvedCheckBox.setChecked(document.isSolved());
@@ -301,7 +316,7 @@ public class CrimeFragment extends Fragment {
         photoPreview.setImageBitmap(bitmap);
 
         String suspect = document.getSuspect();
-        boolean hasSuspect = !"".equals(suspect);
+        boolean hasSuspect = suspect != null && !suspect.equals("");
         if (hasSuspect) {
             suspectButton.setText(ContactUtils.getContactDisplayName(getActivity(), suspect));
         } else {
@@ -317,14 +332,16 @@ public class CrimeFragment extends Fragment {
             Photo photo = new Photo();
             photo.setFilename(fileName);
             document.setPhoto(photo);
-            updateControls();
+            updateUI();
+            callbacks.onItemUpdated(document);
         }
     }
 
     private void updateDocumentDate(Intent data) {
         Date date = (Date) data.getSerializableExtra(DatePickerFragment.DATE_VALUE);
         document.setDate(date);
-        updateControls();
+        updateUI();
+        callbacks.onItemUpdated(document);
     }
 
     private void updateDocumentSuspect(Intent data) {
@@ -341,7 +358,8 @@ public class CrimeFragment extends Fragment {
 */
         String contactId = data.getData().getLastPathSegment();
         document.setSuspect(contactId);
-        updateControls();
+        updateUI();
+        callbacks.onItemUpdated(document);
     }
 
     private void pickSuspect() {
@@ -401,4 +419,8 @@ public class CrimeFragment extends Fragment {
         return activities.size() > 0;
     }
 
+    public interface Callbacks {
+
+        void onItemUpdated(Crime crime);
+    }
 }

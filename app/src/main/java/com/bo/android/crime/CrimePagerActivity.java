@@ -10,7 +10,7 @@ import com.bo.android.crime.util.ActionBarUtils;
 
 import java.util.UUID;
 
-public class CrimePagerActivity extends FragmentActivity {
+public class CrimePagerActivity extends FragmentActivity implements CrimeFragment.Callbacks{
 
     private CrimeLab store;
 
@@ -49,4 +49,10 @@ public class CrimePagerActivity extends FragmentActivity {
 
         setContentView(pager);
     }
+
+    @Override
+    public void onItemUpdated(Crime crime) {
+        /* do nothing */
+    }
+
 }

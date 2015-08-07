@@ -49,7 +49,7 @@ public abstract class ContactUtils {
     }
 
     public static String getContactDisplayName(@NonNull Activity activity, @NonNull String contactId) {
-        String result = "<Unknown>";
+        String result = "< Unknown >";
         Cursor contacts = activity.getContentResolver().query(Contacts.CONTENT_URI, null, "_ID = '" + contactId + "'", null, null);
         if (contacts.moveToFirst()) {
             result = contacts.getString(contacts.getColumnIndex(Contacts.DISPLAY_NAME));
